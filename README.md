@@ -723,8 +723,6 @@ The prototype demonstrates the integration of the major S.A.L.S.A subsystems:
 
 <div align="center">
 
-<img src="assets/Team Logo.png" width="120">
-
 ### **Explore S.A.L.S.A Online**
 
 **Interactive visualization and deployed website for the S.A.L.S.A project.**
@@ -739,22 +737,15 @@ The prototype demonstrates the integration of the major S.A.L.S.A subsystems:
 
 # 👥 Team Nexora
 
-<div align="center">
-
-<img src="assets/Team Logo.png" width="160">
-
-### **TEAM NEXORA**
-
-</div>
 
 | Member | Role                           | Department | Responsibility                 |
-| :----- | :----------------------------- | :--------: | :----------------------------- |
-| **T1** | Team Lead & Firmware Architect |     CSE    | System Design & Integration    |
-| **T2** | Embedded Systems Engineer      |    ET&T    | Microcontroller Programming    |
-| **T3** | Signal Processing Specialist   |    ET&T    | Filter Design & DSP            |
-| **T4** | Software & Simulation Engineer |     CSE    | Algorithm Development          |
-| **T5** | UI/UX & Data Analyst           |     CSE    | OLED Interface & Visualization |
-| **T6** | Mechanical Design Engineer     |    Mech    | Enclosure & 3D Design          |
+| :----------------:  | :----------------------------- | :--------: | :----------------------------- |
+| **Mayukh Mondal**   | Team Lead & Firmware Architect |     CSE    | System Design & Integration    |
+| **Bhavya Kumari**   | Embedded Systems Engineer      |    ET&T    | Microcontroller Programming    |
+| **Kashish Shariff** | Signal Processing Specialist   |    ET&T    | Filter Design & DSP            |
+| **Omkar Sahu**      | Software & Simulation Engineer |     CSE    | Algorithm Development          |
+| **Kanak Narware**   | UI/UX & Data Analyst           |     CSE    | OLED Interface & Visualization |
+| **Shubham Mishra**  | Mechanical Design Engineer     |    Mech    | Enclosure & 3D Design          |
 
 ---
 
