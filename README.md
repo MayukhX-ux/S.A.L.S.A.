@@ -1,7 +1,5 @@
 <div align="center">
 
-<img src="assets/Team Logo.png" width="180">
-
 # 🌊 S.A.L.S.A
 
 ### **Secure Acoustic Ledger for Subsea Autonomy**
