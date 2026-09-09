@@ -1,10 +1,14 @@
 <div align="center">
 
+<img src="assets/Team Logo.png" width="180">
+
 # 🌊 S.A.L.S.A
 
 ### **Secure Acoustic Ledger for Subsea Autonomy**
 
 **Adaptive Sonar Transmitter Payload for Autonomous Underwater Vehicles**
+
+### Developed by **Team Nexora**
 
 <br>
 
@@ -17,6 +21,26 @@
 <br>
 
 **100–500 kHz**  •  **12-bit DAC**  •  **5 Waveform Types**  •  **35–80 mA**
+
+<br>
+
+[🌐 **View Live Deployed Website**](https://salsa-two.vercel.app/index.html)
+
+</div>
+
+---
+
+# 🏆 Team Nexora
+
+<div align="center">
+
+<img src="assets/Team Logo.png" width="220">
+
+### **Developed by Team Nexora**
+
+**Team Nexora** is the team behind the design, development, prototyping, firmware, signal-processing, software, and mechanical implementation of **S.A.L.S.A — Secure Acoustic Ledger for Subsea Autonomy**.
+
+The team combines expertise across **Computer Science & Engineering, Electronics, Telecommunication & Technology, and Mechanical Engineering** to develop an adaptive underwater acoustic transmission system for Autonomous Underwater Vehicles.
 
 </div>
 
@@ -32,14 +56,15 @@ The system uses a **custom R-2R ladder DAC for 12-bit resolution, multiple wavef
 
 ## ⚡ At a Glance
 
-| Parameter              | Specification                         |
-| :--------------------- | :------------------------------------ |
-| 🎯 **Application**     | Autonomous Underwater Vehicles (AUVs) |
-| 📡 **Frequency Range** | **100–500 kHz**                       |
-| 🎚️ **DAC Resolution** | **12-bit**                            |
-| ⚡ **Power Draw**       | **35–80 mA**                          |
-| 🌊 **Waveform Types**  | **5**                                 |
-| 🪟 **Digital Windows** | **3**                                 |
+| Parameter               | Specification                         |
+| :---------------------- | :------------------------------------ |
+| 🎯 **Application**      | Autonomous Underwater Vehicles (AUVs) |
+| 📡 **Frequency Range**  | **100–500 kHz**                       |
+| 🎚️ **DAC Resolution**  | **12-bit**                            |
+| ⚡ **Power Draw**        | **35–80 mA**                          |
+| 🌊 **Waveform Types**   | **5**                                 |
+| 🪟 **Digital Windows**  | **3**                                 |
+| 👥 **Development Team** | **Team Nexora**                       |
 
 ---
 
@@ -358,7 +383,7 @@ The project evolved through multiple hardware stages, from initial R-2R ladder t
 
 ### 🔹 3D Enclosure
 
-<img src="assets/3D enclosure.jpeg" width="100%">
+<img src="assets/3D enclosure fabricated.jpeg" width="100%">
 
 **3D Printed Enclosure — Field-deployable AUV payload pod**
 
@@ -579,6 +604,7 @@ R-2R DAC
 | **Output Interface**          | BNC               |
 | **Display Interface**         | I2C               |
 | **Primary Controller**        | ESP32             |
+| **Development Team**          | Team Nexora       |
 
 ---
 
@@ -695,15 +721,33 @@ The prototype demonstrates the integration of the major S.A.L.S.A subsystems:
 
 ---
 
-# 📡 Live Demo
+# 🌐 Live Demo
+
+<div align="center">
+
+<img src="assets/Team Logo.png" width="120">
+
+### **Explore S.A.L.S.A Online**
 
 **Interactive visualization and deployed website for the S.A.L.S.A project.**
 
-🔗 **[Deployed Website Link](#)**
+<br>
+
+[🚀 **Visit the Live S.A.L.S.A Website**](https://salsa-two.vercel.app/index.html)
+
+</div>
 
 ---
 
-# 👥 Team
+# 👥 Team Nexora
+
+<div align="center">
+
+<img src="assets/Team Logo.png" width="160">
+
+### **TEAM NEXORA**
+
+</div>
 
 | Member | Role                           | Department | Responsibility                 |
 | :----- | :----------------------------- | :--------: | :----------------------------- |
@@ -725,7 +769,8 @@ S.A.L.S.A/
 │   ├── Initial Prototype.jpeg
 │   ├── Prototype_v2.jpeg
 │   ├── 3D enclosure fabricated.jpeg
-│   └── Circuit Diagram.png
+│   ├── Circuit Diagram.png
+│   └── Team Logo.png
 │
 ├── README.md
 │
@@ -790,7 +835,11 @@ S.A.L.S.A/
 
 <div align="center">
 
+<img src="assets/Team Logo.png" width="150">
+
 ### **Secure Acoustic Ledger for Subsea Autonomy**
+
+**Developed by Team Nexora**
 
 **Adaptive • Acoustic • Autonomous**
 
@@ -799,6 +848,10 @@ S.A.L.S.A/
 **Smart India Hackathon 2026**
 
 **Robotics & Drones Theme**
+
+<br>
+
+[🌐 **Live Website**](https://salsa-two.vercel.app/index.html)
 
 <br>
 
@@ -816,6 +869,8 @@ S.A.L.S.A/
 
 <div align="center">
 
-© 2026 S.A.L.S.A Project Team. All Rights Reserved.
+© 2026 **Team Nexora**. All Rights Reserved.
+
+**S.A.L.S.A Project — Smart India Hackathon 2026**
 
 </div>
