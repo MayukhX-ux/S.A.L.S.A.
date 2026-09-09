@@ -358,7 +358,7 @@ The project evolved through multiple hardware stages, from initial R-2R ladder t
 
 ### 🔹 3D Enclosure
 
-<img src="assets/3D enclosure fabricated.jpeg" width="100%">
+<img src="assets/3D enclosure.jpeg" width="100%">
 
 **3D Printed Enclosure — Field-deployable AUV payload pod**
 
