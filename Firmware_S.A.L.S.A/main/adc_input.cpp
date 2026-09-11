@@ -15,10 +15,7 @@ static adc_cali_handle_t cali_handle = nullptr;
 
 static bool calibration_enabled = false;
 
-
-// ============================================================
-// Convert ADC GPIO to ADC channel
-// ============================================================
+// Convert ADC GPIO to ADC channel 
 
 static adc_channel_t gpio_to_channel(int gpio)
 {
@@ -38,10 +35,7 @@ static adc_channel_t gpio_to_channel(int gpio)
     }
 }
 
-
-// ============================================================
 // ADC INITIALIZATION
-// ============================================================
 
 esp_err_t adc_input_init()
 {
@@ -62,9 +56,9 @@ esp_err_t adc_input_init()
     channel_config.atten = ADC_ATTEN_DB_11;
 
 
-    // --------------------------------------------------------
+    
     // Turbidity
-    // --------------------------------------------------------
+    
 
     ESP_ERROR_CHECK(
         adc_oneshot_config_channel(
@@ -75,9 +69,9 @@ esp_err_t adc_input_init()
     );
 
 
-    // --------------------------------------------------------
+    
     // Depth
-    // --------------------------------------------------------
+    
 
     ESP_ERROR_CHECK(
         adc_oneshot_config_channel(
@@ -88,9 +82,9 @@ esp_err_t adc_input_init()
     );
 
 
-    // --------------------------------------------------------
+    
     // Temperature
-    // --------------------------------------------------------
+    
 
     ESP_ERROR_CHECK(
         adc_oneshot_config_channel(
@@ -101,9 +95,9 @@ esp_err_t adc_input_init()
     );
 
 
-    // --------------------------------------------------------
+    
     // ADC calibration
-    // --------------------------------------------------------
+    
 
     adc_cali_line_fitting_config_t cali_config = {};
 
@@ -132,9 +126,9 @@ esp_err_t adc_input_init()
 }
 
 
-// ============================================================
+
 // Read normalized ADC value
-// ============================================================
+
 
 static float read_normalized(int gpio)
 {
@@ -186,9 +180,9 @@ static float read_normalized(int gpio)
 }
 
 
-// ============================================================
+
 // Turbidity
-// ============================================================
+
 
 float adc_read_turbidity()
 {
@@ -196,9 +190,9 @@ float adc_read_turbidity()
 }
 
 
-// ============================================================
+
 // Depth
-// ============================================================
+
 
 float adc_read_depth()
 {
@@ -206,9 +200,9 @@ float adc_read_depth()
 }
 
 
-// ============================================================
+
 // Temperature
-// ============================================================
+
 //
 // Pot position:
 // 0.0 -> TEMP_MIN_C
@@ -229,9 +223,9 @@ float adc_read_temperature_c()
 }
 
 
-// ============================================================
+
 // Read all environmental parameters
-// ============================================================
+
 
 EnvironmentalData adc_read_all()
 {
