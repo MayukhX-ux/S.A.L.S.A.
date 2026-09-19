@@ -1,0 +1,2 @@
+// adaptive.h
+#pragma once
