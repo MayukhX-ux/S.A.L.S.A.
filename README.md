@@ -1,735 +1,667 @@
-<div align="center">
-
 # 🌊 S.A.L.S.A
 
-### **Secure Acoustic Ledger for Subsea Autonomy**
+## Secure Acoustic Ledger for Subsea Autonomy
 
-**Adaptive Sonar Transmitter Payload for Autonomous Underwater Vehicles**
+**Software-Defined Adaptive Low-Power Sonar Transmitter Payload for Autonomous Underwater Vehicles**
 
-### Developed by **Team Nexora**
-
-<br>
-
-[![Smart India Hackathon](https://img.shields.io/badge/Smart%20India%20Hackathon-2026-0A66C2?style=for-the-badge)](#)
-[![Robotics & Drones](https://img.shields.io/badge/Theme-Robotics%20%26%20Drones-00B8D4?style=for-the-badge)](#)
-[![ESP32](https://img.shields.io/badge/ESP32-Microcontroller-E7352C?style=for-the-badge\&logo=espressif)](#)
-[![C/C++](https://img.shields.io/badge/C%2FC%2B%2B-Firmware-00599C?style=for-the-badge\&logo=cplusplus)](#)
-[![Arduino](https://img.shields.io/badge/Arduino-IDE-00979D?style=for-the-badge\&logo=arduino)](#)
-
-<br>
-
-**100–500 kHz**  •  **12-bit DAC**  •  **5 Waveform Types**  •  **35–80 mA**
-
-<br>
-
-[🌐 **View Live Deployed Website**](https://salsa-two.vercel.app/index.html)
-
-</div>
+### Developed by Team Nexora
 
 ---
 
-# 🏆 Team Nexora
+# 📌 Project Overview
 
-<div align="center">
+**S.A.L.S.A. is a software-defined, adaptive sonar transmitter payload designed for Autonomous Underwater Vehicles (AUVs).**
 
-<img src="assets/Team Logo.png" width="220">
+Unlike a conventional transmitter that operates using a fixed waveform and transmission configuration, S.A.L.S.A. uses real-time environmental information to dynamically modify its acoustic transmission parameters.
 
-### **Developed by Team Nexora**
+The system follows:
 
-**Team Nexora** is the team behind the design, development, prototyping, firmware, signal-processing, software, and mechanical implementation of **S.A.L.S.A — Secure Acoustic Ledger for Subsea Autonomy**.
+```text
+SENSE → ANALYSE → ADAPT → GENERATE → TRANSMIT
+```
 
-The team combines expertise across **Computer Science & Engineering, Electronics, Telecommunication & Technology, and Mechanical Engineering** to develop an adaptive underwater acoustic transmission system for Autonomous Underwater Vehicles.
+The current prototype monitors **depth, temperature, and turbidity** using dedicated underwater sensors. These parameters are processed by an **ESP32-based embedded controller**, which calculates an environmental condition value and determines suitable transmission characteristics.
 
-</div>
-
----
-
-## 📌 Project Overview
-
-**S.A.L.S.A is an adaptive sonar transmitter payload designed for Autonomous Underwater Vehicles (AUVs).** It dynamically adjusts acoustic waveform parameters based on real-time environmental conditions, ensuring optimal performance across diverse underwater scenarios.
-
-The system uses a **custom R-2R ladder DAC for 12-bit resolution, multiple waveform generation, digital windowing, and a complete analog filter chain for clean signal output.**
+The selected waveform is generated using **Direct Digital Synthesis (DDS)**, transferred through a high-speed DMA-assisted parallel interface, converted into an analog signal using a **12-bit R-2R DAC**, and conditioned through a multi-stage **OPA356 active filter** before being passed toward the external power-amplification and acoustic-transmission section.
 
 ---
 
-## ⚡ At a Glance
+# ⚡ At a Glance
 
-| Parameter               | Specification                         |
-| :---------------------- | :------------------------------------ |
-| 🎯 **Application**      | Autonomous Underwater Vehicles (AUVs) |
-| 📡 **Frequency Range**  | **100–500 kHz**                       |
-| 🎚️ **DAC Resolution**  | **12-bit**                            |
-| ⚡ **Power Draw**        | **35–80 mA**                          |
-| 🌊 **Waveform Types**   | **5**                                 |
-| 🪟 **Digital Windows**  | **3**                                 |
-| 👥 **Development Team** | **Team Nexora**                       |
+| Parameter | Current Specification |
+| :--- | :--- |
+| 🎯 Application | Autonomous Underwater Vehicles (AUVs) |
+| 📡 Frequency Range | 100–500 kHz |
+| ⚡ Sampling Rate | 4 MS/s |
+| 🎚️ DAC Resolution | 12-bit |
+| 🔢 DDS Phase Accumulator | 32-bit |
+| 🌊 Waveform Types | 5 |
+| 🪟 Digital Windows | Hamming / Hann / Blackman |
+| 🧮 Sine LUT | 4096 entries |
+| 🌡️ Environmental Inputs | Depth / Temperature / Turbidity |
+| 🔌 DAC Architecture | R-2R Ladder |
+| 🧠 Controller | ESP32-WROOM-32 |
+| 🔄 High-Speed Output | I2S0 Parallel + DMA |
+| 🎛️ Analog Filter | Multi-stage OPA356 |
+| 👥 Development Team | Team Nexora |
 
 ---
 
 # 🧠 System Architecture
 
-S.A.L.S.A follows a real-time sensing → decision → waveform generation → DAC → filtering pipeline.
-
-```mermaid
-flowchart LR
-
-    A["Turbidity<br/>Potentiometer<br/>GPIO36"]
-    B["Depth<br/>Potentiometer<br/>GPIO39"]
-    C["Temperature<br/>Fixed<br/>25°C"]
-
-    A --> D["12-bit ADC<br/>30-Sample Average"]
-    B --> D
-    C --> D
-
-    D --> E["ADAPTIVE LOGIC<br/>ESP32 Firmware"]
-
-    E --> F["WAVEFORM ENGINE<br/>5 Wave Types"]
-
-    F --> G["DIGITAL WINDOW<br/>Hamming / Hann / Blackman"]
-
-    G --> H["R-2R LADDER DAC<br/>12-bit Output"]
-
-    H --> I["ANALOG FILTER<br/>10µF + RC + TL072"]
-
-    I --> J["BNC OUTPUT<br/>Oscilloscope"]
-
-    J -. "Real-time loop" .-> A
+```text
+Environmental Sensors
+        ↓
+ESP32 Environmental Analysis
+        ↓
+Adaptive Algorithm
+        ↓
+Waveform Selection
+        ↓
+DDS + LUT
+        ↓
+I2S0 Parallel + DMA
+        ↓
+SN74LVC541A Digital Buffers
+        ↓
+12-bit R-2R DAC
+        ↓
+OPA356 Filter Stage 1
+        ↓
+OPA356 Filter Stage 2
+        ↓
+PA Interface
+        ↓
+Power Amplifier
+        ↓
+Matching Network
+        ↓
+Underwater Acoustic Transducer
 ```
 
 ---
 
-## 🔄 Complete System Flow
+# 🌊 Environmental Sensing
+
+## 🌫️ Turbidity — SEN0710
+
+The **DFRobot SEN0710 industrial turbidity sensor** provides underwater turbidity measurements.
+
+The sensor communicates with the ESP32 through **RS-485 Modbus RTU** using a **MAX3485E** transceiver.
 
 ```text
-┌─────────────────────────────────────────────────────────────────────┐
-│                        S.A.L.S.A SYSTEM FLOW                        │
-└─────────────────────────────────────────────────────────────────────┘
-
-┌───────────────┐     ┌───────────────┐     ┌───────────────┐
-│  Turbidity    │     │    Depth      │     │  Temperature  │
-│ Potentiometer │     │ Potentiometer │     │   (Fixed)     │
-│   (GPIO36)    │     │   (GPIO39)    │     │    25°C       │
-└───────┬───────┘     └───────┬───────┘     └───────┬───────┘
-        │                     │                     │
-        └─────────────────────┼─────────────────────┘
-                              ▼
-                    ┌──────────────────┐
-                    │   12-bit ADC     │
-                    │  30-Sample Avg   │
-                    └──────────────────┘
-                              │
-                              ▼
-                    ┌──────────────────┐
-                    │  ADAPTIVE LOGIC  │
-                    │  ESP32 Firmware  │
-                    └──────────────────┘
-                              │
-                              ▼
-                    ┌──────────────────┐
-                    │ WAVEFORM ENGINE  │
-                    │  5 Wave Types    │
-                    └──────────────────┘
-                              │
-                              ▼
-                    ┌──────────────────┐
-                    │ DIGITAL WINDOW   │
-                    │ Hamming/Hann/    │
-                    │ Blackman         │
-                    └──────────────────┘
-                              │
-                              ▼
-                    ┌──────────────────┐
-                    │  R-2R LADDER DAC │
-                    │  12-bit Output   │
-                    └──────────────────┘
-                              │
-                              ▼
-                    ┌──────────────────┐
-                    │  ANALOG FILTER   │
-                    │ 10µF + RC + TL072│
-                    └──────────────────┘
-                              │
-                              ▼
-                    ┌──────────────────┐
-                    │   BNC OUTPUT     │
-                    │  Oscilloscope    │
-                    └──────────────────┘
-                              │
-                              └────────────────┐
-                                               │
-                                  (Real-time loop)
+SEN0710
+   │ RS-485
+   ▼
+MAX3485E
+   │ UART
+   ▼
+ESP32
 ```
+
+| Parameter | Specification |
+| :--- | :--- |
+| Measurement Range | 0–1000 NTU |
+| Interface | RS-485 |
+| Protocol | Modbus RTU |
+| Supply | 10–30 V |
+| Protection | IP68 |
+
+## 🌊 Depth + Temperature — MS5837-30BA
+
+The **MS5837-30BA** provides pressure-based depth information together with temperature measurement through **I2C**.
+
+```text
+MS5837-30BA
+      │
+      ├── SDA → ESP32 GPIO32
+      └── SCL → ESP32 GPIO33
+```
+
+---
+
+# 🔌 RS-485 Interface
+
+```text
+                 MAX3485E
+
+SEN0710 A ───────── A
+SEN0710 B ───────── B
+
+RO ───────────────── ESP32 RX
+DI ───────────────── ESP32 TX
+
+DE + /RE ─────────── ESP32 Direction Control
+```
+
+This provides a differential communication interface between the underwater sensor and embedded controller.
 
 ---
 
 # 🧩 Adaptive Decision Algorithm
 
-S.A.L.S.A dynamically selects the operating waveform and frequency according to turbidity conditions, followed by depth-based power adjustment.
-
-```mermaid
-flowchart TD
-
-    A["START LOOP"] --> B["READ SENSORS<br/>Turbidity %<br/>Depth %"]
-
-    B --> C{"Turbidity < 20%?"}
-
-    C -- "YES" --> D["500 kHz<br/>LFM Up<br/>5 ms<br/>49% Power"]
-
-    C -- "NO" --> E{"Turbidity < 40%?"}
-
-    E -- "YES" --> F["400 kHz<br/>LFM Down<br/>8 ms<br/>61% Power"]
-
-    E -- "NO" --> G{"Turbidity < 60%?"}
-
-    G -- "YES" --> H["300 kHz<br/>CW Pulse<br/>12 ms<br/>73% Power"]
-
-    G -- "NO" --> I{"Turbidity < 80%?"}
-
-    I -- "YES" --> J["200 kHz<br/>Phase Coded<br/>15 ms<br/>85% Power"]
-
-    I -- "NO" --> K["100 kHz<br/>Geometric Sweep<br/>20 ms<br/>100% Power"]
-
-    D --> L["DEPTH ADJUSTMENT"]
-    F --> L
-    H --> L
-    J --> L
-    K --> L
-
-    L --> M[">70%: Power +500<br/><30%: Power -300"]
-
-    M --> N["GENERATE WAVEFORM<br/>APPLY WINDOW<br/>OUTPUT TO DAC"]
-
-    N --> O["LOOP AGAIN"]
-    O --> B
-```
-
-<details>
-<summary><b>🔍 Detailed Adaptive Decision Flow</b></summary>
+The prototype considers:
 
 ```text
-┌─────────────────────────────────────────────────────────────┐
-│                  ADAPTIVE DECISION ALGORITHM                │
-└─────────────────────────────────────────────────────────────┘
-
-                    ┌─────────────┐
-                    │ START LOOP  │
-                    └──────┬──────┘
-                           ▼
-                    ┌─────────────┐
-                    │ READ SENSORS│
-                    │ Turbidity % │
-                    │ Depth %     │
-                    └──────┬──────┘
-                           ▼
-                 ┌─────────────────┐
-                 │ Turbidity < 20% │
-                 └────┬───────┬────┘
-                    YES       NO
-                     │         │
-                     ▼         ▼
-              ┌────────────┐ ┌─────────────────┐
-              │ 500 kHz    │ │ Turbidity < 40% │
-              │ LFM Up     │ └────┬───────┬────┘
-              │ 5 ms       │    YES       NO
-              │ 49% Power  │     │         │
-              └────────────┘     ▼         ▼
-                          ┌────────────┐ ┌─────────────────┐
-                          │ 400 kHz    │ │ Turbidity < 60% │
-                          │ LFM Down   │ └────┬───────┬────┘
-                          │ 8 ms       │    YES       NO
-                          │ 61% Power  │     │         │
-                          └────────────┘     ▼         ▼
-                                      ┌────────────┐ ┌─────────────────┐
-                                      │ 300 kHz    │ │ Turbidity < 80% │
-                                      │ CW Pulse   │ └────┬───────┬────┘
-                                      │ 12 ms      │    YES       NO
-                                      │ 73% Power  │     │         │
-                                      └────────────┘     ▼         ▼
-                                                   ┌────────────┐ ┌────────────┐
-                                                   │ 200 kHz    │ │ 100 kHz    │
-                                                   │ Phase Coded│ │ Geometric  │
-                                                   │ 15 ms      │ │ 20 ms      │
-                                                   │ 85% Power  │ │ 100% Power │
-                                                   └────────────┘ └────────────┘
-                                                          │
-                                                          ▼
-                                                   ┌──────────────────┐
-                                                   │ DEPTH ADJUSTMENT │
-                                                   │ >70%: Power+500 │
-                                                   │ <30%: Power-300 │
-                                                   └──────────────────┘
-                                                          │
-                                                          ▼
-                                                   ┌──────────────────┐
-                                                   │ GENERATE WAVEFORM│
-                                                   │ APPLY WINDOW     │
-                                                   │ OUTPUT TO DAC    │
-                                                   └──────────────────┘
-                                                          │
-                                                          ▼
-                                                     ┌─────────────┐
-                                                     │  LOOP AGAIN │
-                                                     └─────────────┘
+Turbidity
+    +
+Depth
+    +
+Temperature Stress
+    ↓
+Environmental Condition E
+    ↓
+Adaptive Transmission Parameters
 ```
 
-</details>
+A representative prototype model is:
+
+```text
+E = 0.45 × Turbidityₙ
+  + 0.30 × Depthₙ
+  + 0.25 × TemperatureStress
+```
+
+The resulting environmental condition is used to modify:
+
+- Frequency
+- Bandwidth
+- Centre frequency
+- Pulse duration
+- Signal amplitude
+- Waveform type
+
+> Note: The current adaptive relationship is a prototype heuristic intended for demonstration and experimental validation. It is not presented as a universal underwater acoustic propagation law.
+
+---
+
+# 🎛️ Adaptive Transmission
+
+The prototype dynamically modifies the waveform according to the calculated environmental condition.
+
+```text
+LOW E        → Wider bandwidth / higher-frequency operation
+MEDIUM E     → Moderate adaptive configuration
+HIGH E       → Narrower bandwidth / lower centre-frequency operation
+```
 
 ---
 
 # 🌊 Waveform Engine
 
-S.A.L.S.A supports five waveform modes optimized for different underwater conditions.
+| Waveform | Description |
+| :--- | :--- |
+| **LFM Up-Chirp** | Frequency increases throughout the pulse |
+| **LFM Down-Chirp** | Frequency decreases throughout the pulse |
+| **CW Pulse** | Fixed-frequency sinusoidal pulse |
+| **Barker-7** | Phase-coded waveform |
+| **Geometric Sweep** | Non-linear frequency sweep |
 
-| Waveform                   |      Frequency Range      | Application             |
-| :------------------------- | :-----------------------: | :---------------------- |
-| **LFM Up Chirp**           | **500 kHz (Clear Water)** | High resolution imaging |
-| **LFM Down Chirp**         |   **400 kHz (Moderate)**  | Balanced performance    |
-| **CW Pulse**               |    **300 kHz (Muddy)**    | Continuous transmission |
-| **Phase Coded (Barker-7)** |  **200 kHz (Heavy Mud)**  | Penetration mode        |
-| **Geometric Sweep**        |   **100 kHz (Extreme)**   | Maximum penetration     |
-
----
-
-# 🎛️ Core Features
-
-<table>
-<tr>
-<td width="50%">
-
-### 📡 Adaptive Frequency Switching
-
-Real-time automatic selection between **100 kHz and 500 kHz** based on turbidity and depth inputs from potentiometers.
-
-</td>
-
-<td width="50%">
-
-### 🔢 Custom R-2R Ladder DAC
-
-12-bit digital-to-analog conversion using **10k and 20k (2×10k series) resistors** with perfect 2:1 ratio for accurate output.
-
-</td>
-</tr>
-
-<tr>
-<td>
-
-### 🌊 Multi-Waveform Generation
-
-CW, LFM Up/Down, Phase-Coded (Barker-7), and Geometric Sweep waveforms generated on-the-fly.
-
-</td>
-
-<td>
-
-### 🪟 Digital Windowing
-
-Hamming (default), Hann, and Blackman windows for sidelobe suppression and smooth pulse transitions.
-
-</td>
-</tr>
-
-<tr>
-<td>
-
-### 🎚️ Analog Filter Chain
-
-10µF coupling capacitor, 10kΩ+100pF RC low-pass filter, and TL072 op-amp buffer for clean signal output.
-
-</td>
-
-<td>
-
-### 🔋 Low Power Design
-
-Dynamic CPU frequency scaling (80-240 MHz) with adaptive current draw of **35-80 mA** for extended battery life.
-
-</td>
-</tr>
-</table>
-
----
-
-# 🧪 Prototype Development
-
-The project evolved through multiple hardware stages, from initial R-2R ladder testing to an integrated prototype and field-deployable enclosure.
-
-<table>
-<tr>
-
-<td align="center" width="33%">
-
-### 🔹 Initial Prototype
-
-<img src="assets/Initial Prototype.jpeg" width="100%">
-
-**Initial Breadboard Prototype — Core ESP32 with R-2R ladder testing**
-
-</td>
-
-<td align="center" width="33%">
-
-### 🔹 Prototype V2
-
-<img src="assets/Prototype_v2.jpeg" width="100%">
-
-**Prototype v2 — Integrated filter chain and OLED display**
-
-</td>
-
-<td align="center" width="33%">
-
-### 🔹 3D Enclosure
-
-<img src="assets/3D enclosure fabricated.jpeg" width="100%">
-
-**3D Printed Enclosure — Field-deployable AUV payload pod**
-
-</td>
-
-</tr>
-</table>
-
----
-
-# 🔌 Circuit Architecture
-
-### Complete Circuit Schematic
-
-<img src="assets/Circuit Diagram.png" width="100%">
-
-<p align="center">
-<i>Complete Circuit Schematic — ESP32, R-2R ladder, filter chain, and peripherals</i>
-</p>
-
----
-
-# 🧱 Hardware Architecture
-
-The hardware platform integrates the ESP32 control and processing layer with the custom R-2R DAC, analog signal-conditioning chain, display and environmental input interfaces.
+### Barker-7 Sequence
 
 ```text
-                    ┌─────────────────────────┐
-                    │          ESP32          │
-                    │                         │
-                    │  ADC Inputs             │
-                    │  GPIO Waveform Output   │
-                    │  Firmware / DSP         │
-                    │  OLED Interface         │
-                    └────────────┬────────────┘
-                                 │
-                                 │ 12-bit Parallel Data
-                                 ▼
-                    ┌─────────────────────────┐
-                    │      R-2R LADDER        │
-                    │          DAC            │
-                    │                         │
-                    │      10k / 20k          │
-                    │      2:1 Ratio          │
-                    └────────────┬────────────┘
-                                 │
-                                 ▼
-                    ┌─────────────────────────┐
-                    │    ANALOG FILTER        │
-                    │                         │
-                    │  10µF Coupling          │
-                    │  10kΩ + 100pF RC        │
-                    │  TL072 Buffer            │
-                    └────────────┬────────────┘
-                                 │
-                                 ▼
-                         ┌──────────────┐
-                         │  BNC OUTPUT   │
-                         │ Oscilloscope  │
-                         └──────────────┘
++1   +1   +1   -1   -1   +1   -1
 ```
 
 ---
 
-# 🧮 Signal Processing Pipeline
+# 📡 Frequency & Bandwidth Adaptation
+
+The prototype operates across:
 
 ```text
-Environmental Inputs
-        │
-        ▼
-┌────────────────────┐
-│ 12-bit ADC Sampling│
-│ 30-Sample Average  │
-└─────────┬──────────┘
-          │
-          ▼
-┌────────────────────┐
-│ Adaptive Decision  │
-│      Logic         │
-└─────────┬──────────┘
-          │
-          ▼
-┌────────────────────┐
-│ Waveform Selection │
-│ CW / LFM / Barker  │
-└─────────┬──────────┘
-          │
-          ▼
-┌────────────────────┐
-│ Digital Windowing  │
-│ Hamming / Hann /   │
-│ Blackman           │
-└─────────┬──────────┘
-          │
-          ▼
-┌────────────────────┐
-│   12-bit R-2R DAC  │
-└─────────┬──────────┘
-          │
-          ▼
-┌────────────────────┐
-│ Analog Filtering   │
-│ + Signal Buffering │
-└─────────┬──────────┘
-          │
-          ▼
-      BNC OUTPUT
+100 kHz ─────────────────────────────── 500 kHz
 ```
+
+A representative adaptive model is:
+
+```text
+Bandwidth = 400 kHz − 300 kHz × E
+
+Centre Frequency = 300 kHz − 100 kHz × E
+```
+
+At low environmental condition:
+
+```text
+E ≈ 0
+Operating Band ≈ 100–500 kHz
+```
+
+At high environmental condition:
+
+```text
+E ≈ 1
+Operating Band ≈ 150–250 kHz
+```
+
+These values demonstrate the software-controlled adaptation mechanism and can be refined through future underwater experiments.
+
+---
+
+# 🧮 Direct Digital Synthesis
+
+S.A.L.S.A. generates its waveform using **Direct Digital Synthesis (DDS)**.
+
+```text
+32-bit Phase Accumulator
+        +
+4096-entry Sine LUT
+        +
+4 MS/s Sampling Rate
+        ↓
+Digital Waveform Samples
+```
+
+The phase increment is:
+
+```text
+ΔP = (f / fs) × 2³²
+```
+
+For example:
+
+```text
+f  = 500 kHz
+fs = 4 MHz
+
+ΔP = 536,870,912
+```
+
+This allows precise digital frequency control without continuously calculating trigonometric functions.
 
 ---
 
 # 🪟 Digital Windowing
 
-S.A.L.S.A incorporates three digital windowing techniques:
+S.A.L.S.A. supports:
 
-| Window       | Role                 |
-| :----------- | :------------------- |
-| **Hamming**  | Default window       |
-| **Hann**     | Smooth pulse shaping |
-| **Blackman** | Sidelobe suppression |
+| Window | Purpose |
+| :--- | :--- |
+| **Hamming** | Default waveform window |
+| **Hann** | Smooth pulse shaping |
+| **Blackman** | Stronger sidelobe suppression |
 
-These windows are applied to generated waveform samples before they are passed to the R-2R ladder DAC.
+---
+
+# ⚡ High-Speed DAC Output
+
+```text
+Waveform Buffer
+      ↓
+DMA Engine
+      ↓
+I2S0 Parallel
+      ↓
+SN74LVC541A
+      ↓
+12-bit R-2R DAC
+```
+
+The target digital sample rate is **4 MS/s**.
+
+---
+
+# 🔢 12-bit R-2R DAC
+
+The prototype uses a discrete **12-bit R-2R ladder DAC**.
+
+```text
+R  = 10 kΩ
+2R = 20 kΩ
+```
+
+Ideal relationship:
+
+```text
+VOUT = VREF × CODE / 4096
+```
+
+With a 3.3 V reference:
+
+```text
+Ideal LSB ≈ 0.806 mV
+```
+
+The digital bits are driven through **SN74LVC541A** buffers.
+
+---
+
+# 🎯 Precision DAC Reference — ADR4533
+
+The R-2R DAC uses an **ADR4533 precision 3.3 V voltage reference**.
+
+```text
++5V Analog
+    ↓
+ADR4533
+    ↓
+DAC_VREF
+    ↓
+R-2R Ladder
+```
+
+Local bypass capacitors support reference stability and noise performance.
 
 ---
 
 # 🎚️ Analog Filter Chain
 
-The analog output stage consists of:
+The raw DAC output is passed through two active filter stages using **OPA356**.
 
 ```text
-R-2R DAC
-   │
-   ▼
-┌─────────────────┐
-│ 10µF Coupling   │
-│   Capacitor     │
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│ 10kΩ + 100pF    │
-│ RC Low-Pass     │
-│ Filter          │
-└────────┬────────┘
-         │
-         ▼
-┌─────────────────┐
-│     TL072       │
-│  Op-Amp Buffer  │
-└────────┬────────┘
-         │
-         ▼
-    BNC OUTPUT
+12-bit R-2R DAC
+       ↓
+OPA356 Stage 1
+R1 = 1 kΩ
+R2 = 1 kΩ
+C1 = 249 pF
+C2 = 210 pF
+       ↓
+OPA356 Stage 2
+R3 = 1 kΩ
+R4 = 1 kΩ
+C3 = 590 pF
+C4 = 86.6 pF
+       ↓
+FILTER_OUT
+```
+
+The filter stages condition the DAC waveform and suppress unwanted high-frequency components.
+
+---
+
+# 🔌 Power Amplifier Interface
+
+The filtered waveform is not intended to directly drive the underwater transducer.
+
+```text
+FILTER_OUT
+    ↓
+PA INPUT
+    ↓
+POWER AMPLIFIER
+    ↓
+MATCHING NETWORK
+    ↓
+UNDERWATER TRANSDUCER
+```
+
+The exact amplifier and matching network depend on the selected transducer's impedance, resonance, capacitance, voltage and power requirements.
+
+---
+
+# 🔌 Complete Circuit Schematic
+
+<div align="center">
+
+<img src="assets/SCH_Schematic1_1-P1_2026-09-20.png" width="100%">
+
+<i>Complete S.A.L.S.A. hardware schematic.</i>
+
+</div>
+
+---
+
+# 📈 Waveform Output
+
+<div align="center">
+
+<img src="assets/Wavform_Output.jpeg" width="90%">
+
+<i>S.A.L.S.A. waveform output demonstrating the generated sonar signal.</i>
+
+</div>
+
+---
+
+# 🧱 Hardware Architecture
+
+```text
+ESP32
+  │
+  ├── Environmental Sensing
+  ├── Adaptive Algorithm
+  ├── DDS + LUT
+  └── I2S0 + DMA
+          ↓
+SN74LVC541A
+          ↓
+12-bit R-2R DAC
+          ↓
+OPA356 Filter 1
+          ↓
+OPA356 Filter 2
+          ↓
+PA Interface
+          ↓
+Power Amplifier
+          ↓
+Matching Network
+          ↓
+Underwater Transducer
+```
+
+---
+
+# 🧠 Firmware Architecture
+
+```text
+SALSA-Firmware/
+│
+├── CMakeLists.txt
+├── sdkconfig.defaults
+│
+└── main/
+    ├── main.cpp
+    ├── config.h
+    ├── ms5837.h
+    ├── ms5837.cpp
+    ├── sen0710.h
+    ├── sen0710.cpp
+    ├── adaptive.h
+    ├── adaptive.cpp
+    ├── dds.h
+    ├── dds.cpp
+    ├── waveform.h
+    ├── waveform.cpp
+    ├── dac_parallel.h
+    └── dac_parallel.cpp
+```
+
+---
+
+# ⚙️ Firmware Processing Flow
+
+```text
+INITIALIZE SYSTEM
+       ↓
+INITIALIZE SENSORS
+       ↓
+INITIALIZE DDS + LUT
+       ↓
+INITIALIZE I2S0 + DMA
+       ↓
+READ ENVIRONMENT
+       ↓
+CALCULATE ENVIRONMENTAL CONDITION
+       ↓
+SELECT WAVEFORM
+       ↓
+CALCULATE DDS PARAMETERS
+       ↓
+GENERATE SAMPLES
+       ↓
+APPLY WINDOW
+       ↓
+DMA → I2S0
+       ↓
+12-bit R-2R DAC
+       ↓
+ANALOG FILTER
+       ↓
+PA / TRANSDUCER
+       ↓
+REPEAT
 ```
 
 ---
 
 # 🧰 Technology Stack
 
-| Category                | Technology             |
-| :---------------------- | :--------------------- |
-| 🧠 **Microcontroller**  | ESP32 Microcontroller  |
-| 🔢 **DAC**              | R-2R Ladder DAC        |
-| 🎚️ **Op-Amp**          | TL072 Op-Amp           |
-| 🖥️ **Display**         | SSD1306 OLED           |
-| 💻 **Development**      | Arduino IDE            |
-| 🧑‍💻 **Programming**   | C/C++                  |
-| 🔗 **Communication**    | I2C Protocol           |
-| ⚡ **GPIO**              | Parallel GPIO          |
-| 📊 **Processing**       | DSP Algorithms         |
-| 📡 **Waveform**         | LFM Chirp              |
-| 🔐 **Phase Coding**     | Barker-7 Phase Code    |
-| 🪟 **Windowing**        | Hamming Window         |
-| 🔋 **Power Management** | ESP32 Power Management |
-
----
-
-# ⚙️ Operating Modes
-
-```text
-                    S.A.L.S.A
-                        │
-          ┌─────────────┴─────────────┐
-          │                           │
-          ▼                           ▼
-   ENVIRONMENTAL INPUTS          DEPTH INPUT
-          │                           │
-          └─────────────┬─────────────┘
-                        ▼
-                ADAPTIVE LOGIC
-                        │
-       ┌────────────────┼────────────────┐
-       │                │                │
-       ▼                ▼                ▼
-   HIGH FREQ        MID RANGE        LOW FREQ
-   500 kHz          300–400 kHz       100–200 kHz
-       │                │                │
-       ▼                ▼                ▼
-   LFM CHIRP          CW / LFM       PHASE CODE /
-                                  GEOMETRIC SWEEP
-```
+| Category | Technology |
+| :--- | :--- |
+| Microcontroller | ESP32-WROOM-32 |
+| Firmware | C/C++ |
+| Development | ESP-IDF |
+| Waveform Generation | DDS |
+| Sine LUT | 4096 Entries |
+| Sample Rate | 4 MS/s |
+| High-Speed Interface | I2S0 Parallel + DMA |
+| DAC | 12-bit R-2R Ladder |
+| DAC Reference | ADR4533 |
+| Digital Buffer | SN74LVC541A |
+| Analog Amplifier | OPA356 |
+| Depth Sensor | MS5837-30BA |
+| Turbidity Sensor | DFRobot SEN0710 |
+| RS-485 Transceiver | MAX3485E |
+| Sensor Communication | I2C + RS-485 Modbus RTU |
+| Signal Processing | Embedded DSP |
+| Waveforms | LFM / CW / Barker-7 / Geometric |
+| Windowing | Hamming / Hann / Blackman |
 
 ---
 
 # 📊 System Specifications
 
-| Specification                 | Value             |
-| :---------------------------- | :---------------- |
-| **Operating Frequency**       | 100–500 kHz       |
-| **DAC Resolution**            | 12-bit            |
-| **Waveform Types**            | 5                 |
-| **Digital Windows**           | 3                 |
-| **CPU Frequency Scaling**     | 80–240 MHz        |
-| **Adaptive Current Draw**     | 35–80 mA          |
-| **Default Temperature Input** | 25°C              |
-| **ADC Sampling**              | 30-Sample Average |
-| **DAC Architecture**          | R-2R Ladder       |
-| **Output Interface**          | BNC               |
-| **Display Interface**         | I2C               |
-| **Primary Controller**        | ESP32             |
-| **Development Team**          | Team Nexora       |
+| Specification | Current Design |
+| :--- | :--- |
+| Operating Frequency | 100–500 kHz |
+| Sampling Rate | 4 MS/s |
+| DAC Resolution | 12-bit |
+| DDS Phase Accumulator | 32-bit |
+| Sine Lookup Table | 4096 entries |
+| Waveform Types | 5 |
+| Window Functions | 3 |
+| Environmental Inputs | Depth / Temperature / Turbidity |
+| Depth Interface | I2C |
+| Turbidity Interface | RS-485 Modbus RTU |
+| DAC Architecture | R-2R |
+| DAC Resistors | 10 kΩ / 20 kΩ |
+| DAC Reference | ADR4533 3.3 V |
+| Digital Buffer | SN74LVC541A |
+| Analog Filter | Two-stage OPA356 |
+| High-Speed Output | I2S0 Parallel + DMA |
+| Primary Controller | ESP32 |
+| External PA | Modular |
+| Acoustic Transducer | Modular |
+| Development Team | Team Nexora |
 
 ---
 
-# 🚀 Development Pipeline
+# 🧪 Current Prototype Validation
 
-```text
-┌──────────────────────┐
-│  Concept & Research  │
-└──────────┬───────────┘
-           ▼
-┌──────────────────────┐
-│   Initial Prototype  │
-│ ESP32 + R-2R Ladder  │
-└──────────┬───────────┘
-           ▼
-┌──────────────────────┐
-│   Filter Integration │
-│   + OLED Interface   │
-└──────────┬───────────┘
-           ▼
-┌──────────────────────┐
-│ Adaptive DSP Engine  │
-│ Waveform Generation  │
-└──────────┬───────────┘
-           ▼
-┌──────────────────────┐
-│ 3D Printed Enclosure │
-└──────────┬───────────┘
-           ▼
-┌──────────────────────┐
-│   AUV Payload Pod    │
-└──────────────────────┘
-```
+| Module | Status |
+| :--- | :---: |
+| ESP32 Control | ✅ |
+| MS5837 Depth Interface | ✅ |
+| MS5837 Temperature Interface | ✅ |
+| SEN0710 Turbidity Interface | ✅ |
+| MAX3485E RS-485 Interface | ✅ |
+| Adaptive Processing | ✅ |
+| DDS Waveform Generation | ✅ |
+| 4096-Entry Sine LUT | ✅ |
+| 32-bit Phase Accumulator | ✅ |
+| I2S0 Parallel Output | ✅ |
+| DMA-Based Sample Transfer | ✅ |
+| 12-bit R-2R DAC | ✅ |
+| ADR4533 Precision Reference | ✅ |
+| SN74LVC541A Buffering | ✅ |
+| OPA356 Filter Stage 1 | ✅ |
+| OPA356 Filter Stage 2 | ✅ |
+| Waveform Output | ✅ |
+| External Power Amplifier | Modular |
+| Matching Network | Modular |
+| Underwater Transducer | Future Integration |
 
 ---
 
 # 💡 Key Innovation
 
-### Adaptive Acoustic Transmission
-
-Instead of operating at a fixed frequency and waveform, S.A.L.S.A dynamically selects among multiple acoustic modes based on environmental conditions.
+S.A.L.S.A. moves beyond a fixed waveform transmitter by making transmission parameters software-controlled and environmentally aware.
 
 ```text
-CLEAR WATER
-    │
-    ▼
-500 kHz LFM Up
-    │
-    ▼
-High Resolution
-    │
-    ▼
-──────────────────────────────
+UNDERWATER ENVIRONMENT
+          ↓
+DEPTH / TEMPERATURE / TURBIDITY
+          ↓
+ENVIRONMENTAL CONDITION ANALYSIS
+          ↓
+ADAPTIVE PARAMETERS
+          ↓
+SOFTWARE-DEFINED WAVEFORM ENGINE
+          ↓
+ANALOG TRANSMISSION
+```
 
-MODERATE CONDITIONS
-    │
-    ▼
-400 kHz LFM Down
-    │
-    ▼
-Balanced Performance
-    │
-    ▼
-──────────────────────────────
+The system connects real-time environmental measurements with physical acoustic waveform generation, creating a flexible platform for adaptive underwater transmission research.
 
-MUDDY WATER
-    │
-    ▼
-300 kHz CW Pulse
-    │
-    ▼
-Continuous Transmission
-    │
-    ▼
-──────────────────────────────
+---
 
-HEAVY MUD
-    │
-    ▼
-200 kHz Phase Coded
-    │
-    ▼
-Penetration Mode
-    │
-    ▼
-──────────────────────────────
+# 🔭 Future Development
 
-EXTREME CONDITIONS
-    │
-    ▼
-100 kHz Geometric Sweep
-    │
-    ▼
-Maximum Penetration
+Future development can include:
+
+- Experimental underwater validation
+- Integration with an actual underwater transducer
+- Power amplifier optimisation
+- Transducer-specific impedance matching
+- Closed-loop acoustic feedback
+- Salinity and conductivity sensing
+- Ambient acoustic noise measurement
+- Adaptive received-signal analysis
+- More advanced waveform optimisation
+- Data-driven adaptive algorithms
+- FPGA/DSP-based high-performance implementation
+- Higher-speed precision DAC
+- Full AUV payload integration
+- Autonomous mission-level control
+
+A future closed-loop architecture could evolve toward:
+
+```text
+ENVIRONMENT
+     ↓
+SENSING
+     ↓
+ADAPTIVE TRANSMISSION
+     ↓
+ACOUSTIC SIGNAL
+     ↓
+TARGET / ENVIRONMENT
+     ↓
+RECEIVED ECHO
+     ↓
+SIGNAL QUALITY ANALYSIS
+     ↓
+NEXT TRANSMISSION
 ```
 
 ---
 
-# 🧪 Prototype Validation
-
-The prototype demonstrates the integration of the major S.A.L.S.A subsystems:
-
-| Module               | Prototype Status |
-| :------------------- | :--------------: |
-| ESP32 Control        |         ✅        |
-| Environmental Input  |         ✅        |
-| R-2R Ladder DAC      |         ✅        |
-| Waveform Generation  |         ✅        |
-| Digital Windowing    |         ✅        |
-| Analog Filter Chain  |         ✅        |
-| OLED Interface       |         ✅        |
-| BNC Signal Output    |         ✅        |
-| 3D Printed Enclosure |         ✅        |
-
----
-
-# 🌐 Live Demo
+# 🎥 Project Demonstration
 
 <div align="center">
 
-### **Explore S.A.L.S.A Online**
+<a href="https://youtu.be/eq3fUiAaMew">
 
-**Interactive visualization and deployed website for the S.A.L.S.A project.**
+<img src="https://img.youtube.com/vi/eq3fUiAaMew/maxresdefault.jpg" width="100%" alt="S.A.L.S.A. Project Video">
 
-<br>
+</a>
 
-[🚀 **Visit the Live S.A.L.S.A Website**](https://salsa-two.vercel.app/index.html)
+### 🎬 Complete S.A.L.S.A. Project Demonstration
+
+**Click the thumbnail above to watch the complete project video on YouTube.**
 
 </div>
 
@@ -737,15 +669,14 @@ The prototype demonstrates the integration of the major S.A.L.S.A subsystems:
 
 # 👥 Team Nexora
 
-
-| Member | Role                           | Department | Responsibility                 |
-| :----------------:  | :----------------------------- | :--------: | :----------------------------- |
-| **Mayukh Mondal**   | Team Lead & Firmware Architect |     CSE    | System Design & Integration    |
-| **Bhavya Kumari**   | Embedded Systems Engineer      |    ET&T    | Microcontroller Programming    |
-| **Kashish Shariff** | Signal Processing Specialist   |    ET&T    | Filter Design & DSP            |
-| **Omkar Sahu**      | Software & Simulation Engineer |     CSE    | Algorithm Development          |
-| **Kanak Narware**   | UI/UX & Data Analyst           |     CSE    | OLED Interface & Visualization |
-| **Shubham Mishra**  | Mechanical Design Engineer     |    Mech    | Enclosure & 3D Design          |
+| Member | Role | Department | Responsibility |
+| :---: | :--- | :---: | :--- |
+| Mayukh Mondal | Team Lead & Firmware Architect | CSE | System Design & Integration |
+| Bhavya Kumari | Embedded Systems Engineer | ET&T | Microcontroller & Embedded Development |
+| Kashish Shariff | Signal Processing Specialist | ET&T | Filter Design & DSP |
+| Omkar Sahu | Software & Simulation Engineer | CSE | Algorithm Development |
+| Kanak Narware | UI/UX & Data Analyst | CSE | Visualization & Data Presentation |
+| Shubham Mishra | Mechanical Design Engineer | Mech | Mechanical Design & Integration |
 
 ---
 
@@ -755,11 +686,25 @@ The prototype demonstrates the integration of the major S.A.L.S.A subsystems:
 S.A.L.S.A/
 │
 ├── assets/
-│   ├── Initial Prototype.jpeg
-│   ├── Prototype_v2.jpeg
-│   ├── 3D enclosure fabricated.jpeg
-│   ├── Circuit Diagram.png
+│   ├── SCH_Schematic1_1-P1_2026-09-20.png
+│   ├── Wavform_Output.jpeg
 │   └── Team Logo.png
+│
+├── main/
+│   ├── main.cpp
+│   ├── config.h
+│   ├── ms5837.cpp
+│   ├── ms5837.h
+│   ├── sen0710.cpp
+│   ├── sen0710.h
+│   ├── adaptive.cpp
+│   ├── adaptive.h
+│   ├── dds.cpp
+│   ├── dds.h
+│   ├── waveform.cpp
+│   ├── waveform.h
+│   ├── dac_parallel.cpp
+│   └── dac_parallel.h
 │
 ├── README.md
 │
@@ -769,86 +714,19 @@ S.A.L.S.A/
 
 ---
 
-# 🔭 System Summary
-
-```text
-                         ┌───────────────────┐
-                         │  ENVIRONMENTAL    │
-                         │     INPUTS        │
-                         └─────────┬─────────┘
-                                   │
-                                   ▼
-                         ┌───────────────────┐
-                         │       ESP32       │
-                         │  Adaptive Logic   │
-                         └─────────┬─────────┘
-                                   │
-                                   ▼
-                         ┌───────────────────┐
-                         │ WAVEFORM ENGINE   │
-                         │                   │
-                         │  LFM ↑ / LFM ↓   │
-                         │  CW / Barker-7    │
-                         │  Geometric Sweep  │
-                         └─────────┬─────────┘
-                                   │
-                                   ▼
-                         ┌───────────────────┐
-                         │ DIGITAL WINDOWING │
-                         │ Hamming / Hann /  │
-                         │     Blackman      │
-                         └─────────┬─────────┘
-                                   │
-                                   ▼
-                         ┌───────────────────┐
-                         │   12-bit R-2R     │
-                         │       DAC         │
-                         └─────────┬─────────┘
-                                   │
-                                   ▼
-                         ┌───────────────────┐
-                         │  ANALOG FILTER    │
-                         │    + TL072        │
-                         └─────────┬─────────┘
-                                   │
-                                   ▼
-                         ┌───────────────────┐
-                         │    BNC OUTPUT     │
-                         │    SONAR SIGNAL   │
-                         └───────────────────┘
-```
-
----
-
-# 🌊 S.A.L.S.A
+# ▶️ S.A.L.S.A. Project Video
 
 <div align="center">
 
-<img src="assets/Team Logo.png" width="150">
+<a href="https://youtu.be/eq3fUiAaMew">
 
-### **Secure Acoustic Ledger for Subsea Autonomy**
+<img src="https://img.youtube.com/vi/eq3fUiAaMew/maxresdefault.jpg" width="100%" alt="Watch S.A.L.S.A. on YouTube">
 
-**Developed by Team Nexora**
+</a>
 
-**Adaptive • Acoustic • Autonomous**
+### **▶ Watch the S.A.L.S.A. Project Video**
 
-<br>
-
-**Smart India Hackathon 2026**
-
-**Robotics & Drones Theme**
-
-<br>
-
-[🌐 **Live Website**](https://salsa-two.vercel.app/index.html)
-
-<br>
-
----
-
-**100–500 kHz**   |   **12-bit DAC**   |   **5 Waveforms**   |   **3 Windows**   |   **35–80 mA**
-
-<br>
+**100–500 kHz | 12-bit DAC | 4 MS/s | 5 Waveforms**
 
 *Built for adaptive underwater acoustic transmission.*
 
@@ -858,8 +736,16 @@ S.A.L.S.A/
 
 <div align="center">
 
-© 2026 **Team Nexora**. All Rights Reserved.
+## 🌊 S.A.L.S.A.
 
-**S.A.L.S.A Project — Smart India Hackathon 2026**
+### Secure Acoustic Ledger for Subsea Autonomy
+
+**Developed by Team Nexora**
+
+**Adaptive • Acoustic • Autonomous**
+
+**Smart India Hackathon 2026**
+
+**Robotics & Drones Theme**
 
 </div>
