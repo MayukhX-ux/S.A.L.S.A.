@@ -649,24 +649,6 @@ NEXT TRANSMISSION
 
 ---
 
-# 🎥 Project Demonstration
-
-<div align="center">
-
-<a href="https://youtu.be/eq3fUiAaMew">
-
-<img src="https://img.youtube.com/vi/eq3fUiAaMew/maxresdefault.jpg" width="100%" alt="S.A.L.S.A. Project Video">
-
-</a>
-
-### 🎬 Complete S.A.L.S.A. Project Demonstration
-
-**Click the thumbnail above to watch the complete project video on YouTube.**
-
-</div>
-
----
-
 # 👥 Team Nexora
 
 | Member | Role | Department | Responsibility |
